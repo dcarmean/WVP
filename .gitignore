@@ -1,0 +1,22 @@
+# Never commit video (GitHub caps files at 100MB; clips belong elsewhere)
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.png
+*.jpg
+*.jpeg
+
+# Secrets / env
+.env
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
