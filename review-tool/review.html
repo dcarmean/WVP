@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New run — review (reference vs 4 takes)</title>
+<style>
+ :root{color-scheme:dark}*{box-sizing:border-box}
+ body{margin:0;background:#0d0f12;color:#e6e8eb;font:14px/1.45 -apple-system,Segoe UI,Roboto,sans-serif}
+ header{position:sticky;top:0;z-index:10;background:#14171c;border-bottom:1px solid #262b33;padding:12px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+ h1{font-size:15px;margin:0 10px 0 0}
+ button{background:#232a33;color:#e6e8eb;border:1px solid #323a45;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:13px}
+ button:hover{background:#2d3540}button.primary{background:#2d6cdf;border-color:#2d6cdf}
+ select{background:#232a33;color:#e6e8eb;border:1px solid #323a45;border-radius:6px;padding:6px 8px}
+ .clip{padding:14px 18px;border-bottom:1px solid #1c2128}
+ .clip h2{font-size:14px;margin:0 0 2px}
+ .note{color:#8b93a0;font-size:12px;margin:0 0 10px}
+ .row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+ .cell{background:#14171c;border:1px solid #262b33;border-radius:8px;overflow:hidden}
+ .cell.ref{border-color:#3a4350}
+ .lab{padding:5px 9px;font-size:12px;border-bottom:1px solid #262b33;display:flex;justify-content:space-between}
+ .lab .r{color:#9ac2ff}
+ video{width:100%;display:block;background:#000;aspect-ratio:16/9}
+ @media(max-width:1100px){.row{grid-template-columns:repeat(2,1fr)}}
+</style></head><body>
+<header>
+ <h1>New run review — reference vs 4 takes</h1>
+ <button class="primary" id="playAll">▶ Play all</button>
+ <button id="pauseAll">⏸ Pause all</button>
+ <label>speed <select id="speed"><option>0.25</option><option>0.5</option><option selected>1</option></select></label>
+ <button id="refresh">⟲ Refresh (as takes finish)</button>
+</header>
+<div id="root"></div>
+<script>
+const CLIPS=[
+ {id:"1_cubes_forest", title:"1 — cubes forest (v2v)", note:"keep glowing cubes clearly visible",
+  ref:"Cube Hunters Foraging/05 Wan_Video_Generate_Camera pans across this glitchy forest.mp4"},
+ {id:"2_weaving", title:"2 — weaving / her background (v2v)", note:"same character + weaving action",
+  ref:"_newrun_src/Wan_Video_Edit_make_this_her_background.mp4"},
+ {id:"3_city_vat", title:"3 — city → vat datacenter (i2v start+end, 10s)", note:"preserve city & datacenter (first/last)",
+  ref:"In the City/04 Wan_Video_Generate_Camera smoothly tracks through the housing complex, gradually.mp4"},
+ {id:"4_bald_sphere", title:"4 — bald man + sphere interface (i2v start+end, 10s)", note:"preserve character & sphere interface (first/last)",
+  ref:"Constant Optimization/06 Wan_Video_Generate_A bald man with warm brown skin, intricate silver neural impl.mp4"},
+ {id:"5_forest_path", title:"5 — forest path (i2v start+end, 10s)", note:"last frame matches; first = source forest path",
+  ref:"The Storyteller/03 ssnrbb_Through_a_dense_forest_path_we_start_to_make_out_parts_4aae2aab-e297-48ac-80de-a4f533ecf412_3.mp4"},
+];
+const root=document.getElementById('root');
+function vid(src){return `<video src="${encodeURI(src)}" muted loop preload="auto" controls playsinline></video>`;}
+function build(){
+ root.innerHTML = CLIPS.map(c=>`
+  <div class="clip">
+    <h2>${c.title}</h2><div class="note">${c.note}</div>
+    <div class="row">
+      <div class="cell ref"><div class="lab"><span>◀ ORIGINAL</span></div>${vid(c.ref)}</div>
+      ${[1,2,3,4].map(n=>`<div class="cell"><div class="lab"><span>take ${n}</span><span class="r">${c.id}</span></div>${vid('_newrun_out/'+c.id+'/take'+n+'.mp4')}</div>`).join('')}
+    </div>
+  </div>`).join('');
+ vids=[...document.querySelectorAll('video')];
+ applySpeed();
+}
+let vids=[];
+const speed=document.getElementById('speed');
+function applySpeed(){const r=parseFloat(speed.value);vids.forEach(v=>v.playbackRate=r);}
+speed.onchange=applySpeed;
+document.getElementById('playAll').onclick=()=>{applySpeed();vids.forEach(v=>v.play().catch(()=>{}));};
+document.getElementById('pauseAll').onclick=()=>vids.forEach(v=>v.pause());
+document.getElementById('refresh').onclick=build;
+build();
+</script></body></html>
